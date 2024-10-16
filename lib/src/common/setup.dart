@@ -4,35 +4,9 @@ import 'package:flutter/cupertino.dart';
 
 import 'callkeep.pigeon.dart';
 
-final hostApi = PHostIsolateApi();
-
 bool _bgHandlerInitialized = false;
 
-Future registerBackgroundMessageHandler(Function userCallbackHandle) async {
-  if (!_bgHandlerInitialized) {
-    _bgHandlerInitialized = true;
-
-    final bgHandle = PluginUtilities.getCallbackHandle(_callbackDispatcher)!;
-    final userHandle = PluginUtilities.getCallbackHandle(userCallbackHandle)!;
-
-    await hostApi.registerBackgroundMessageHandler(
-      userHandle.toRawHandle(),
-      bgHandle.toRawHandle(),
-    );
-  }
-}
-
-void wakeUpBackgroundHandler() {
-  hostApi.wakeUpBackgroundHandler();
-}
-
-void tearDownBackgroundHandler() {
-  hostApi.tearDownBackgroundHandler();
-}
-
-void requestPermissions() {
-  hostApi.requestPermissions();
-}
+typedef BackgroundHandler = Future<void> Function();
 
 @pragma('vm:entry-point')
 void _callbackDispatcher() {
@@ -46,14 +20,42 @@ void _callbackDispatcher() {
 class _BackgroundServiceDelegate implements PDelegateBackgroundRegisterFlutterApi {
   @override
   Future<void> onWakeUpBackgroundHandler(int userCallbackHandle) async {
-    final CallbackHandle handle = CallbackHandle.fromRawHandle(userCallbackHandle);
-
-    final closure = PluginUtilities.getCallbackFromHandle(handle)! as Future<void> Function();
     try {
+      final CallbackHandle handle = CallbackHandle.fromRawHandle(userCallbackHandle);
+      final closure = PluginUtilities.getCallbackFromHandle(handle)! as Future<void> Function();
       await closure();
     } catch (e) {
-      print('FlutterFire Messaging: An error occurred in your background messaging handler:');
-      print(e);
+      print('Error in onWakeUpBackgroundHandler: $e');
     }
+  }
+}
+
+class Setup {
+  static final hostApi = PHostIsolateApi();
+
+  static Future registerBackgroundMessageHandler(BackgroundHandler userBackgroundHandler) async {
+    if (!_bgHandlerInitialized) {
+      _bgHandlerInitialized = true;
+
+      final userHandle = PluginUtilities.getCallbackHandle(userBackgroundHandler)!;
+      final bgHandle = PluginUtilities.getCallbackHandle(_callbackDispatcher)!;
+
+      await hostApi.registerBackgroundMessageHandler(
+        userHandle.toRawHandle(),
+        bgHandle.toRawHandle(),
+      );
+    }
+  }
+
+  static void wakeUpBackgroundHandler() {
+    hostApi.wakeUpBackgroundHandler();
+  }
+
+  static void tearDownBackgroundHandler() {
+    hostApi.tearDownBackgroundHandler();
+  }
+
+  static void requestPermissions() {
+    hostApi.requestPermissions();
   }
 }

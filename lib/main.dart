@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:isolate_tester/src/common/setup.dart' as setup;
+import 'package:isolate_tester/src/common/setup.dart';
 
 import 'isolates.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setup.registerBackgroundMessageHandler(userCallbackHandle);
+  await Setup.registerBackgroundMessageHandler(userCallbackHandle);
   runApp(const MyApp());
 }
 
@@ -38,17 +38,17 @@ class MainScreen extends StatelessWidget {
             Divider(),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: setup.wakeUpBackgroundHandler,
+              onPressed: Setup.wakeUpBackgroundHandler,
               child: Text("Wake up background handler"),
             ),
             SizedBox(height: 8),
             ElevatedButton(
-              onPressed: setup.tearDownBackgroundHandler,
+              onPressed: Setup.tearDownBackgroundHandler,
               child: Text("Tear down background handler"),
             ),
             SizedBox(height: 8),
             ElevatedButton(
-              onPressed: setup.requestPermissions,
+              onPressed: Setup.requestPermissions,
               child: Text("Request permissions"),
             ),
           ],

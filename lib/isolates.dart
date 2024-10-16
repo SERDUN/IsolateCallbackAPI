@@ -10,17 +10,8 @@ Future<void> syncCallStatus() async {
 }
 
 @pragma('vm:entry-point')
-Future<void> userCallbackHandle(bool isBackground) async {
+Future<void> userCallbackHandle() async {
   logIsolateInfo('updateApplicationStatus');
-  print('updateApplicationStatus isBackground: $isBackground');
-  Fluttertoast.showToast(
-      msg: "This is Center Short Toast",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-      fontSize: 16.0);
 }
 
 void logIsolateInfo(String message) {

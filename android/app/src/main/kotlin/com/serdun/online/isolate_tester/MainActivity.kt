@@ -19,6 +19,8 @@ class MainActivity : FlutterActivity(), PHostIsolateApi {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         PHostIsolateApi.setUp(flutterEngine.dartExecutor.binaryMessenger, this)
+
+
     }
 
     override fun registerBackgroundMessageHandler(
@@ -33,6 +35,7 @@ class MainActivity : FlutterActivity(), PHostIsolateApi {
             TestForegroundCallService.launch(this)
         };
         Toast.makeText(this, "registerBackgroundMessageHandler", Toast.LENGTH_SHORT).show()
+        callback(Result.success(Unit))
     }
 
     override fun wakeUpBackgroundHandler(callback: (Result<Unit>) -> Unit) {
@@ -40,6 +43,7 @@ class MainActivity : FlutterActivity(), PHostIsolateApi {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             TestForegroundCallService.wakeUp(this)
         }
+        callback(Result.success(Unit))
     }
 
     override fun tearDownBackgroundHandler(callback: (Result<Unit>) -> Unit) {
@@ -47,6 +51,8 @@ class MainActivity : FlutterActivity(), PHostIsolateApi {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             TestForegroundCallService.tearDown(this)
         }
+        callback(Result.success(Unit))
+
     }
 
     override fun requestPermissions(callback: (Result<Unit>) -> Unit) {

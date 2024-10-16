@@ -20,6 +20,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
+import com.serdun.online.isolate_tester.PDelegateBackgroundRegisterFlutterApi
 import com.serdun.online.isolate_tester.R
 import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
@@ -32,6 +33,8 @@ class TestForegroundCallService : Service() {
     private var isRunning: AtomicBoolean = AtomicBoolean(false)
     private val notificationId = 1234
     private var mainHandler: Handler? = null
+
+
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -46,8 +49,7 @@ class TestForegroundCallService : Service() {
         stopForeground(true)
         isRunning.set(false)
         backgroundEngine?.serviceControlSurface?.detachFromService()
-        backgroundEngine?.destroy()
-        backgroundEngine = null
+
         super.onDestroy()
     }
 
@@ -120,10 +122,9 @@ class TestForegroundCallService : Service() {
     private fun wakeUp() {
         runService()
 
-        val callIntent = Intent(TelephonyServiceType.triggertCall.action).apply {
-            putExtra("handler", IsolateUserCallbackHandler)
+        pDelegateBackgroundRegisterFlutterApi?.onWakeUpBackgroundHandler(IsolateUserCallbackHandler!!) {
+            println("triggerCall: $it")
         }
-        applicationContext.sendBroadcast(callIntent)
     }
 
     private fun tearDown() {
@@ -147,9 +148,12 @@ class TestForegroundCallService : Service() {
         getLock(applicationContext)?.acquire()
 
         if (backgroundEngine == null) {
-
             if (IsolatePluginCallbackHandler != null) {
                 startBackgroundIsolate(this, IsolatePluginCallbackHandler!!)
+
+                pDelegateBackgroundRegisterFlutterApi =
+                    PDelegateBackgroundRegisterFlutterApi(backgroundEngine!!.dartExecutor.binaryMessenger);
+
             } else {
                 Log.e(TAG, "No callback handle found in preferences")
             }
@@ -188,12 +192,11 @@ class TestForegroundCallService : Service() {
         private const val TAG = "BackgroundService"
         private val LOCK_NAME = (TestForegroundCallService::class.java.name + ".Lock")
 
+        private var backgroundEngine: FlutterEngine? = null
+        private var pDelegateBackgroundRegisterFlutterApi: PDelegateBackgroundRegisterFlutterApi? = null;
+
         var IsolatePluginCallbackHandler: Long? = null
         var IsolateUserCallbackHandler: Long? = null
-
-        @Volatile
-        private var backgroundEngine: FlutterEngine? = null
-
 
         @RequiresApi(Build.VERSION_CODES.O)
         private fun communicate(context: Context, action: TestForegroundCallServiceEnums, bundle: Bundle?) {
