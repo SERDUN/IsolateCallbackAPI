@@ -1,0 +1,26 @@
+name: isolate_tester
+description: "A new Flutter project."
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  fluttertoast: ^8.2.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pigeon: ^22.5.0
+  fluttertoast: ^8.2.8
+  flutter_lints: ^5.0.0
+
+flutter:
+
+
+  uses-material-design: true
