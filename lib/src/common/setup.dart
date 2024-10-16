@@ -30,7 +30,7 @@ class _BackgroundServiceDelegate implements PDelegateBackgroundRegisterFlutterAp
   }
 }
 
-class Setup {
+class IsolateTesterAPI {
   static final hostApi = PHostIsolateApi();
 
   static Future registerBackgroundMessageHandler(BackgroundHandler userBackgroundHandler) async {

@@ -5,7 +5,7 @@ import 'isolates.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Setup.registerBackgroundMessageHandler(userCallbackHandle);
+  await IsolateTesterAPI.registerBackgroundMessageHandler(userCallbackHandle);
   runApp(const MyApp());
 }
 
@@ -38,17 +38,17 @@ class MainScreen extends StatelessWidget {
             Divider(),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: Setup.wakeUpBackgroundHandler,
+              onPressed: IsolateTesterAPI.wakeUpBackgroundHandler,
               child: Text("Wake up background handler"),
             ),
             SizedBox(height: 8),
             ElevatedButton(
-              onPressed: Setup.tearDownBackgroundHandler,
+              onPressed: IsolateTesterAPI.tearDownBackgroundHandler,
               child: Text("Tear down background handler"),
             ),
             SizedBox(height: 8),
             ElevatedButton(
-              onPressed: Setup.requestPermissions,
+              onPressed: IsolateTesterAPI.requestPermissions,
               child: Text("Request permissions"),
             ),
           ],
